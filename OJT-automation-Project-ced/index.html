@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PPA Monitoring System - Laoag City Hall</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+
+        <div id="login-wrapper">
+            <div id="login-screen">
+
+            <h1>Laoag City Hall</h1>
+
+            <div id="login-box">
+                <div class="login-tabs">
+                    <div class="login-tab active" onclick="switchLoginTab('office', this)">Office</div>
+                    <div class="login-tab" onclick="switchLoginTab('admin', this)">Admin</div>
+                </div>
+
+                <!-- Office Login Section -->
+                <div id="office-login-section" class="login-section">
+                    <form onsubmit="event.preventDefault(); loginOffice()">
+                        <label>Select Office:</label>
+                        <select id="office-select">
+                            <option value="">-- Select your office --</option>
+                        </select>
+
+                        <label>Password:</label>
+                        <input type="password" id="office-password" placeholder="Enter office password" autocomplete="current-password" />
+
+                        <button type="submit">Login</button>
+                    </form>
+                </div>
+
+                <!-- Admin Login Section -->
+                <div id="admin-login-section" class="login-section" style="display: none;">
+                    <form onsubmit="event.preventDefault(); loginAdmin()">
+                        <label>Username:</label>
+                        <input type="text" id="admin-username" placeholder="Username" autocomplete="username" />
+
+                        <label>Password:</label>
+                        <input type="password" id="admin-password" placeholder="Password" autocomplete="current-password" />
+
+                        <button type="submit">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div id="global-year-bar">
+            <label for="global-year">FY</label>
+            <select id="global-year" onchange="setYear(parseInt(this.value))"></select>
+        </div>
+
+        <div id="employee-view" style="display: none;">
+            <!-- Sidebar -->
+            <nav id="sidebar">
+                <div class="sidebar-brand">
+                    <h1>Laoag City Hall</h1>
+                </div>
+                <nav class="sidebar-nav">
+                    <div class="nav-section">Overview</div>
+                    <div class="nav-item" data-report="office-dashboard" onclick="switchReport('office-dashboard', this)">
+                        <span>Office Dashboard</span>
+                    </div>
+                    <div class="nav-section">Reports</div>
+                    <div class="nav-item" data-report="quarterly" onclick="switchReport('quarterly', this)">
+                        <span>Quarterly Financial</span>
+                    </div>
+                    <div class="nav-item" data-report="physical" onclick="switchReport('physical', this)">
+                        <span>Physical Performance</span>
+                    </div>
+                    <div class="nav-item" data-report="annual" onclick="switchReport('annual', this)">
+                        <span>Annual Financial</span>
+                    </div>
+                    <div class="nav-section">Planning</div>
+                    <div class="nav-item" data-report="aip" onclick="switchReport('aip', this)">
+                        <span>Annual Investment Program</span>
+                    </div>
+                </nav>
+                <div class="sidebar-footer">
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main id="employee-main">
+                <div class="employee-header">
+                    <div class="header-left">
+                        <h2 id="report-title">Office Dashboard</h2>
+                        <p id="office-welcome">Welcome!</p>
+                    </div>
+                    <div id="employee-deadline-countdown" style="display:none;margin-top:8px;padding:8px 12px;border-radius:6px;font-size:13px;font-weight:600;"></div>
+                </div>
+                <div id="office-dashboard-container"></div>
+                <div id="report-container"></div>
+            </main>
+        </div>
+
+        <!-- Modern Manager Dashboard View -->
+        <div id="manager-dashboard" style="display: none;">
+            <!-- Sidebar -->
+            <aside id="dashboard-sidebar">
+                <div class="sidebar-brand">
+                    <div class="gov-seal"></div>
+                    <h1>Laoag City Hall</h1>
+                    <p>Admin Dashboard</p>
+                </div>
+                <nav class="sidebar-nav">
+                    <div class="nav-section">Overview</div>
+                    <div class="nav-item active" data-page="dashboard" onclick="switchDashboardPage('dashboard', this)">
+                        <span class="nav-icon"></span>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-section">Management</div>
+                    <div class="nav-item" data-page="offices" onclick="switchDashboardPage('offices', this)">
+                        <span class="nav-icon"></span>
+                        <span>Offices</span>
+                    </div>
+                </nav>
+                <div class="sidebar-footer">
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main id="dashboard-main">
+                <!-- Topbar -->
+                <div id="dashboard-topbar">
+                    <div class="topbar-title" id="dashboard-page-title">Dashboard Overview</div>
+                    <div class="topbar-right">
+                    </div>
+                </div>
+
+                <!-- Content Area -->
+                <div id="dashboard-content">
+                    <!-- Dashboard Page -->
+                    <div id="dashboard-page-dashboard" class="dashboard-page">
+                    <!-- Top Section: Header & Actions -->
+                    <div class="section-header">
+                        <div>
+                            <h2>Annual Submission Status</h2>
+                            <p id="dashboard-subtitle">Overview of all office submissions</p>
+                        </div>
+                    </div>
+
+                    <!-- Second Section: KPI Cards -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card navy">
+                            <div class="kpi-label">Total Offices</div>
+                            <div class="kpi-value" id="kpi-total-offices">23</div>
+                            <div class="kpi-sub">Registered offices</div>
+                        </div>
+                        <div class="kpi-card sky">
+                            <div class="kpi-label">Total Programs</div>
+                            <div class="kpi-value" id="kpi-total-programs">850</div>
+                            <div class="kpi-sub">All programs</div>
+                        </div>
+                        <div class="kpi-card mint">
+                            <div class="kpi-label">Submitted</div>
+                            <div class="kpi-value" id="kpi-submitted">5</div>
+                            <div class="kpi-sub">Completed submissions</div>
+                        </div>
+                        <div class="kpi-card gold">
+                            <div class="kpi-label">Pending</div>
+                            <div class="kpi-value" id="kpi-pending">18</div>
+                            <div class="kpi-sub">Awaiting submission</div>
+                        </div>
+                    </div>
+
+                    <!-- Third Section: Charts -->
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <h3>Office Submission Status</h3>
+                            <div class="chart-wrap">
+                                <canvas id="barChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Current Year Status Breakdown</h3>
+                            <div class="chart-wrap">
+                                <canvas id="donutChart"></canvas>
+                            </div>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color legend-green"></span>
+                                    <span>Submitted</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color legend-red"></span>
+                                    <span>Pending</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fourth Section: Annual Financial Accomplishment Horizontal Bar Chart -->
+                    <div class="chart-card" style="margin-top: 20px;">
+                        <h3>Annual Financial Accomplishment by Office</h3>
+                        <p style="color: #666; font-size: 12px; margin-bottom: 15px;">Percentage of obligations to allotment released per office</p>
+                        <div class="chart-wrap">
+                            <canvas id="horizontalBarChart"></canvas>
+                        </div>
+                        <div class="chart-legend" style="margin-top: 10px;">
+                            <div class="legend-item">
+                                <span class="legend-color legend-green"></span>
+                                <span>80%+ (Good)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background-color: #ffc107;"></span>
+                                <span>50-79% (Moderate)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color legend-red"></span>
+                                <span>&lt;50% (Low)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fifth Section: Submission Details Table -->
+                    <div class="table-card" style="margin-top: 20px;">
+                        <div class="table-toolbar">
+                            <h3>Office Submission Details</h3>
+                        </div>
+                        <div class="table-container">
+                            <table class="modern-table" id="dashboard-table">
+                                <thead>
+                                    <tr>
+                                        <th>Office</th>
+                                        <th>Programs</th>
+                                        <th>Status</th>
+                                        <th>Submitted At</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
+
+                <!-- Offices Page -->
+                <div id="dashboard-page-offices" class="dashboard-page" style="display: none;">
+                    <div class="section-header">
+                        <div>
+                            <h2>Office Management</h2>
+                            <p>View and manage all offices and their submissions</p>
+                        </div>
+                    </div>
+
+                    <!-- Deadline Settings -->
+                    <div class="table-card" id="deadline-settings-card">
+                        <div class="table-toolbar">
+                            <h3>Deadline Settings</h3>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span style="font-size:12px;color:var(--muted);" id="deadline-status"></span>
+                                <button class="btn btn-outline btn-sm" onclick="toggleDeadlineSection()" id="deadline-toggle-btn">Show</button>
+                            </div>
+                        </div>
+                        <div id="deadline-settings-body" style="display:none;padding:16px;border-top:1px solid var(--border);">
+                            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+                                <button class="btn btn-outline btn-sm" onclick="clearDeadline()" style="color:#e74c3c;border-color:#e74c3c;">Clear Deadline</button>
+                            </div>
+                            <div id="deadline-global-section" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                                <label style="font-size:13px;font-weight:600;color:#0B2545;">Deadline:</label>
+                                <input type="datetime-local" id="deadline-global-input" style="padding:6px 10px;border:1px solid #D0DCF0;border-radius:6px;font-size:13px;">
+                                <button class="btn btn-primary btn-sm" onclick="saveGlobalDeadline()">Save Deadline</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Access Requests -->
+                    <div class="table-card" id="access-requests-card">
+                        <div class="table-toolbar">
+                            <h3>Access Requests <span id="access-requests-badge" style="display:none;background:#e74c3c;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px;"></span></h3>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span style="font-size:12px;color:var(--muted);" id="access-requests-status"></span>
+                                <button class="btn btn-outline btn-sm" onclick="toggleAccessRequests()" id="access-requests-toggle-btn">Show</button>
+                            </div>
+                        </div>
+                        <div id="access-requests-body" style="display:none;border-top:1px solid var(--border);">
+                            <div class="table-container" style="border:none;">
+                                <table class="modern-table" id="access-requests-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Office</th>
+                                            <th>Report Type</th>
+                                            <th>Quarter</th>
+                                            <th>Reason</th>
+                                            <th>Requested At</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="access-requests-table-body">
+                                        <tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);">No access requests.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="deadline-banner" style="display:none;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;margin-bottom:16px;font-size:14px;font-weight:500;"></div>
+
+                    <div class="table-card" id="offices-table-card">
+                        <div class="table-toolbar">
+                            <h3>All Offices</h3>
+                            <div>
+                                <div class="search-wrap">
+                                    <input class="search-input" type="text" placeholder="Search offices..." aria-label="Search offices" oninput="filterOfficeTable(this.value)" />
+                                </div>
+                                <button class="btn btn-primary btn-sm" onclick="addOffice(this)">+ Add Office</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="modern-table" id="offices-table">
+                                <thead>
+                                    <tr>
+                                        <th>Office</th>
+                                        <th>Programs</th>
+                                        <th>Status</th>
+                                        <th>Submitted At</th>
+                                        <th>Deadline</th>
+                                        <th>Edit</th>
+                                        <th>Reports</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="offices-table-body">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Office Editor -->
+                    <div id="office-editor-card" class="table-card" style="display: none;">
+                        <div class="table-toolbar">
+                            <h3 id="office-editor-title">Edit Office</h3>
+                            <div>
+                                <button class="btn btn-outline btn-sm" onclick="closeOfficeEditor()">Back</button>
+                                <button class="btn btn-outline btn-sm" onclick="addOfficeEditorRow()">+ Add Row</button>
+                                <button class="btn btn-primary btn-sm" onclick="saveOfficeEditor(this)">Save Changes</button>
+                            </div>
+                        </div>
+                        <!-- Report Tabs -->
+                        <div class="report-tabs">
+                            <button class="report-tab active" data-tab="quarterly" onclick="switchOfficeEditorTab('quarterly', this)">Quarterly</button>
+                            <button class="report-tab" data-tab="physical" onclick="switchOfficeEditorTab('physical', this)">Physical Performance</button>
+                            <button class="report-tab" data-tab="annual" onclick="switchOfficeEditorTab('annual', this)">Annual Financial</button>
+                            <button class="report-tab" data-tab="aip" onclick="switchOfficeEditorTab('aip', this)">AIP</button>
+                        </div>
+                        <!-- Quarter selector for quarterly tab -->
+                        <div id="office-editor-quarter-bar" style="display: flex; align-items: center; gap: 8px; padding: 8px 20px; border-bottom: 1px solid var(--border);">
+                            <label for="office-editor-quarter" style="margin:0; font-size:13px; font-weight:600; color:var(--muted);">Quarter:</label>
+                            <select id="office-editor-quarter" onchange="switchOfficeEditorQuarter(this.value)" style="width:auto; padding:4px 8px; margin:0;">
+                                <option value="Q1">Q1 (Jan - Mar)</option>
+                                <option value="Q2">Q2 (Apr - Jun)</option>
+                                <option value="Q3">Q3 (Jul - Sep)</option>
+                                <option value="Q4">Q4 (Oct - Dec)</option>
+                            </select>
+                        </div>
+                        <div class="table-container">
+                            <table class="modern-table" id="office-editor-table">
+                                <thead id="office-editor-head">
+                                    <!-- Populated by JavaScript -->
+                                </thead>
+                                <tbody id="office-editor-body">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Office Reports Viewer -->
+                    <div id="office-reports-card" class="table-card" style="display: none;">
+                        <div class="table-toolbar">
+                            <h3 id="office-reports-title">Office Reports</h3>
+                            <button class="btn btn-outline btn-sm" onclick="closeOfficeReports()">Back</button>
+                        </div>
+                        <div id="office-reports-list" class="table-container">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Report Detail Editor -->
+                    <div id="report-detail-card" class="table-card" style="display: none;">
+                        <div class="table-toolbar">
+                            <h3 id="report-detail-title">Report Detail</h3>
+                            <div>
+                                <button class="btn btn-outline btn-sm" onclick="backToReportsList()">Back</button>
+                                <button class="btn btn-outline btn-sm" onclick="addReportRow()">+ Add Row</button>
+                                <button class="btn btn-primary btn-sm" onclick="saveReportDetail(this)">Save</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="modern-table" id="report-detail-table">
+                                <thead id="report-detail-head">
+                                    <!-- Populated by JavaScript -->
+                                </thead>
+                                <tbody id="report-detail-body">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+            </main>
+        </div>
+
+        <div id="toast-container"></div>
+
+        <script src="office-data.generated.js"></script>
+        <script src="script.js?v=3"></script>
+
+    </body>
+</html>
