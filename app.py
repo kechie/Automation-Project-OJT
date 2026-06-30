@@ -8,10 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24).hex())
 app.permanent_session_lifetime = timedelta(hours=8)
-DB_PATH = os.path.join(
-    os.environ.get('LOCALAPPDATA', os.path.expanduser('~\\AppData\\Local')),
-    'OJT-automation', 'database.db'
-)
+DB_PATH = os.environ.get('DB_PATH', '/var/lib/ojt-data/database.db')
 
 def get_db():
     conn = sqlite3.connect(DB_PATH, timeout=10)
@@ -679,18 +676,15 @@ def is_past_deadline(office_id, year):
             return True
     return False
 
-if __name__ == '__main__': 
+def initialize_app():
     init_db()
     seed_programs()
-    # Seed default users
     conn = get_db()
     mgr = conn.execute("SELECT COUNT(*) as cnt FROM users WHERE role = 'manager'").fetchone()
     if not mgr or mgr['cnt'] == 0:
         conn.execute("INSERT INTO users (office_id, role, password) VALUES (?, ?, ?)",
                      ('manager', 'manager', generate_password_hash('manager2026')))
         conn.commit()
-    
-    # Seed office user accounts with default password (office id)
     offices = conn.execute("SELECT id FROM offices").fetchall()
     for office in offices:
         existing = conn.execute("SELECT id FROM users WHERE office_id = ? AND role = 'employee'",
@@ -700,4 +694,8 @@ if __name__ == '__main__':
                          (office['id'], 'employee', generate_password_hash(office['id'])))
     conn.commit()
     conn.close()
-    app.run(debug=True)
+
+if __name__ == '__main__':
+    initialize_app()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

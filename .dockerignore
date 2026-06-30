@@ -1,0 +1,14 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.db
+.venv
+venv/
+.env
+.git
+.gitignore
+README.md
+*.md
+seed_budget_excel.py
