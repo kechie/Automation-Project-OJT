@@ -13,5 +13,4 @@ ENV PORT=5000
 
 EXPOSE 5000
 
-# Run initialization before starting gunicorn
 CMD python -c "from app import initialize_app; initialize_app()" && exec gunicorn --workers 2 --bind "0.0.0.0:${PORT}" app:app

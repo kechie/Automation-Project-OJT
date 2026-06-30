@@ -3,7 +3,6 @@ __pycache__
 *.pyo
 *.pyd
 .Python
-*.db
 .venv
 venv/
 .git
@@ -14,3 +13,4 @@ seed_budget_excel.py
 .env
 .env.*
 *.backup.*
+database.db
