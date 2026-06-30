@@ -11,3 +11,6 @@ venv/
 README.md
 *.md
 seed_budget_excel.py
+.env
+.env.*
+*.backup.*

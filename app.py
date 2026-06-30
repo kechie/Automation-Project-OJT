@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24).hex())
+app.secret_key = os.environ.get('SECRET_KEY') or os.urandom(24).hex()
 app.permanent_session_lifetime = timedelta(hours=8)
 DB_PATH = os.environ.get('DB_PATH', '/var/lib/ojt-data/database.db')
 

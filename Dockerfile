@@ -9,7 +9,6 @@ COPY . .
 
 RUN mkdir -p /var/lib/ojt-data && chmod 755 /var/lib/ojt-data
 
-ENV SECRET_KEY=change-me-in-production
 ENV PORT=5000
 
 EXPOSE 5000
